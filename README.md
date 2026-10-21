@@ -10,7 +10,7 @@
 ## 目录结构
 
 ```
-Designmode-Portfolio/
+text-audio-pipeline/
 ├── tools/          代码：文本管线 9 个、音频管线 9 个、批处理 11 个
 ├── config/         配置层示例：类型注册表、校验清单、字段黑名单、proto 别名
 ├── launchers/      6 个双击入口
