@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+
+# 说明：samples/SEText_output/ 下的 xlsx 是随仓库提供的样例输出，
+# 用于展示 demo 运行结果，请勿忽略。

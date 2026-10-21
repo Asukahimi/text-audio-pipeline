@@ -1,0 +1,6 @@
+@:0001
+Healing Potion
+@:0002
+Star Gate Stone
+@:0003
+Restores a small amount of HP.

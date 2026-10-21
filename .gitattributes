@@ -1,0 +1,7 @@
+# 统一按文本处理，但批处理文件保持 CRLF
+* text=auto
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf

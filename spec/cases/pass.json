@@ -1,0 +1,43 @@
+{
+  "snapshot": "case-pass",
+  "note": "全部规则通过的快照。用于确认规范本身可执行、无假阳性。",
+
+  "tables": [
+    {
+      "name": "c_monster_cfg",
+      "fields": [
+        { "name": "Name", "proto_type": "string", "in_manifest": true },
+        { "name": "Desc", "proto_type": "string", "in_manifest": true },
+        { "name": "Level", "proto_type": "int32", "in_manifest": false }
+      ]
+    },
+    {
+      "name": "c_map_cfg",
+      "fields": [
+        { "name": "Name", "proto_type": "string", "in_manifest": true },
+        { "name": "MapEditFile", "proto_type": "string", "in_manifest": false, "blacklisted": true },
+        { "name": "NavMeshFile", "proto_type": "string", "in_manifest": false, "blacklisted": true },
+        { "name": "BGMusic", "proto_type": "string", "in_manifest": false, "blacklisted": true }
+      ]
+    }
+  ],
+
+  "columns": [
+    "#IDAlias", "LINENO",
+    "DEMOTEXT_NAME_CHS", "DEMOTEXT_NAME_JA", "DEMOTEXT_NAME_KO",
+    "DEMOTEXT_NAME_EN", "DEMOTEXT_NAME_DE", "DEMOTEXT_NAME_FR"
+  ],
+  "column_ignore": ["#IDAlias", "LINENO"],
+
+  "generated_rows": [
+    { "ukey": "治疗药水", "column": "DEMOTEXT_NAME_CHS" },
+    { "ukey": "星门石", "column": "DEMOTEXT_NAME_CHS" },
+    { "ukey": "恢复少量生命值。", "column": "DEMOTEXT_NAME_CHS" }
+  ],
+
+  "merged": [
+    { "ukey": "治疗药水", "translations": ["回復薬"] },
+    { "ukey": "星门石", "translations": ["スターポータル"] },
+    { "ukey": "恢复少量生命值。", "translations": ["HPを少し回復する。"] }
+  ]
+}

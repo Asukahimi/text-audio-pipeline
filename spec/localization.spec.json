@@ -1,0 +1,180 @@
+{
+  "spec_version": "1.0",
+  "domain": "text-localization-pipeline",
+  "title": "文本与本地化管线的可校验规范",
+  "purpose": "将本地化生产过程中的判定知识，从脚本代码中抽出为可执行、可校验、可被 Agent 直接消费的规范。执行器只需实现有限算子集，规范本身不包含可执行代码。",
+  "scope": "配置表导出 → 文本收敛 → 按 ukey 合并 → 交付 的全链路",
+
+  "design_notes": [
+    "规范用 JSON 而非 YAML：零依赖，任何运行时可直接加载，无需解析器。",
+    "规则只声明『检查什么 + 判定条件 + 违反后果』，不含可执行代码。执行器实现有限的 check.kind 算子集。",
+    "每条规则的 provenance 指向真实脚本与配置，规则不是凭空写的。",
+    "每条规则必须提供 pass / fail 两个样例，执行器可自测。",
+    "on_violation.action 只允许 abort / exclude / report 三种，避免规则作者自由发挥。"
+  ],
+
+  "inputs": {
+    "snapshot": {
+      "description": "一次管线运行的证据快照。执行器只读该快照，不接触原始工程。",
+      "fields": {
+        "tables": "配置表清单：name, fields[{name, proto_type, in_manifest, blacklisted}]",
+        "columns": "导出 CSV 的列名数组",
+        "column_ignore": "不参与列名校验的列（如 key 列、行号列）",
+        "generated_rows": "提取出的文本行：ukey, column",
+        "merged": "按 ukey 合并后的结果：ukey, translations[]"
+      }
+    }
+  },
+
+  "rules": [
+    {
+      "id": "LOC-001",
+      "name": "待翻译字段必须为字符串类型",
+      "intent": "只有 string 字段才允许进入翻译流程。数值、枚举、ID 列混入会产出无意义译文并污染下游。",
+      "applies_to": "tables[*].fields[?in_manifest == true]",
+      "assert": "field.proto_type == 'string'",
+      "check": {
+        "kind": "field_type_is",
+        "params": { "expected_type": "string", "only_when": "in_manifest" }
+      },
+      "on_violation": {
+        "action": "abort",
+        "code": "E_NONSTRING_HEADER",
+        "message": "[Error] 非字符串表头, {table}.{field} ({proto_type})"
+      },
+      "examples": {
+        "pass": { "table": "c_monster_cfg", "field": "Name", "proto_type": "string", "in_manifest": true },
+        "fail": { "table": "c_monster_cfg", "field": "Level", "proto_type": "int32", "in_manifest": true,
+                  "note": "数值列被误列进待翻译清单" }
+      },
+      "provenance": {
+        "script": "tools/localization/validate_config.py",
+        "config": "config/translate_config.json",
+        "note": "脚本原逻辑：validate_field_type() 发现非 CPPTYPE_STRING 即打印 [Error] 并返回 False"
+      }
+    },
+
+    {
+      "id": "LOC-002",
+      "name": "黑名单字段不得进入翻译清单",
+      "intent": "字符串不等于需要翻译。地图编辑路径、NavMesh 路径、BGM 资源名等字段虽然类型是 string，但必须排除。",
+      "applies_to": "tables[*].fields[?in_manifest == true and blacklisted == true]",
+      "assert": "not (field.in_manifest and field.blacklisted)",
+      "check": {
+        "kind": "not_in_blacklist",
+        "params": {}
+      },
+      "on_violation": {
+        "action": "exclude",
+        "code": "E_BLACKLISTED_FIELD",
+        "message": "[Warn] 黑名单字段被列入待翻译清单, {table}.{field} — 已排除"
+      },
+      "examples": {
+        "pass": { "table": "c_map_cfg", "field": "MapEditFile", "in_manifest": false, "blacklisted": true },
+        "fail": { "table": "c_map_cfg", "field": "MapEditFile", "in_manifest": true, "blacklisted": true,
+                  "note": "路径字段进了翻译清单，会产出无意义的『译文』" }
+      },
+      "provenance": {
+        "script": "tools/localization/generate_se_csv_text.py",
+        "config": "config/LocalizationBlacklist.json",
+        "note": "黑名单为 表名 → 字段名 → false 的两级结构，共 35 张表"
+      }
+    },
+
+    {
+      "id": "LOC-003",
+      "name": "作为唯一键的中文列必须含中文",
+      "intent": "ukey 取中文原文。若中文列为空或不含汉字，说明该行列错位或表本身填错，必须在这一步挡下。",
+      "applies_to": "generated_rows[*].ukey",
+      "assert": "ukey matches /[\\u4e00-\\u9fa5]/",
+      "check": {
+        "kind": "ukey_has_cjk",
+        "params": { "pattern": "[\\u4e00-\\u9fa5]" }
+      },
+      "on_violation": {
+        "action": "exclude",
+        "code": "E_INVALID_UKEY",
+        "message": "[Warn] ukey 不含中文, 已丢弃: column={column} value={ukey}"
+      },
+      "examples": {
+        "pass": { "ukey": "治疗药水", "column": "DEMOTEXT_NAME_CHS" },
+        "fail": { "ukey": "Healing Potion", "column": "DEMOTEXT_NAME_CHS",
+                  "note": "中文列被英文覆盖，或语言列错位" }
+      },
+      "provenance": {
+        "script": "tools/localization/util.py",
+        "config": null,
+        "note": "util.is_invalid_chinese() 以 re.search(r'[\\u4e00-\\u9fa5]', s) 判定，非字符串直接视为非法"
+      }
+    },
+
+    {
+      "id": "LOC-004",
+      "name": "导出列名必须符合类型约定",
+      "intent": "列名是提取逻辑的唯一依据。命名不合约定会导致该列被静默漏掉，且不会有任何报错。",
+      "applies_to": "columns[*] except column_ignore",
+      "assert": "column matches /^[A-Z][A-Z0-9]*(_[A-Z][A-Z0-9]*)*_(CHS|JA|KO|EN|DE|FR)$/",
+      "check": {
+        "kind": "column_name_matches",
+        "params": { "pattern": "^[A-Z][A-Z0-9]*(_[A-Z][A-Z0-9]*)*_(CHS|JA|KO|EN|DE|FR)$" }
+      },
+      "on_violation": {
+        "action": "abort",
+        "code": "E_BAD_COLUMN_NAME",
+        "message": "[Error] 列名不符合 <表名>_<类型>_<语言> 约定: {column}"
+      },
+      "examples": {
+        "pass": { "column": "DEMOTEXT_NAME_JA" },
+        "fail": { "column": "DEMOTEXT_NAME_JP",
+                  "note": "语言标识写成 JP，提取逻辑只认 JA，该列会被静默漏掉" }
+      },
+      "provenance": {
+        "script": "tools/localization/generate_se_csv_text.py",
+        "config": "config/se_csv_text_type.json",
+        "note": "pre_col 取 CSV 文件名大写，列名拼为 {pre_col}_{SGL|PLR}_{语言} 或 {pre_col}_{类型名}_{语言}"
+      }
+    },
+
+    {
+      "id": "LOC-005",
+      "name": "同一 ukey 的多条译文必须报异常",
+      "intent": "一对多意味着数据有问题。静默取第一条会让错误无声地流到线上。",
+      "applies_to": "merged[*].translations",
+      "assert": "len(translations) == 1 or all_equal(translations)",
+      "check": {
+        "kind": "no_multi_translation",
+        "params": { "allow_identical": true }
+      },
+      "on_violation": {
+        "action": "report",
+        "code": "E_MULTI_TRANSLATION",
+        "message": "[Warn] 一对多译文, 已写入 exception: ukey={ukey} 共 {count} 条"
+      },
+      "examples": {
+        "pass": { "ukey": "治疗药水", "translations": ["回復薬"] },
+        "fail": { "ukey": "治疗药水", "translations": ["回復薬", "回復薬(旧)"],
+                  "note": "同一 ukey 两条不同译文，必须暴露而非取首条" }
+      },
+      "provenance": {
+        "script": "tools/localization/merge_se_text.py",
+        "config": null,
+        "note": "原逻辑：count > 1 时把每条都写进 exception.xlsx，标准表只取 first_item"
+      }
+    }
+  ],
+
+  "report": {
+    "format": "json",
+    "fields": {
+      "spec": "规范文件名与版本",
+      "snapshot": "被校验的快照名",
+      "summary": "total / passed / failed / verdict",
+      "results": "逐规则：id, status, violations[]"
+    },
+    "exit_codes": {
+      "0": "全部通过",
+      "1": "存在 abort 级违反",
+      "2": "输入或规范本身无法解析"
+    }
+  }
+}

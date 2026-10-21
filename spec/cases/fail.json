@@ -1,0 +1,40 @@
+{
+  "snapshot": "case-fail",
+  "note": "故意制造 5 类违反，用于确认每条规则都能被触发、且报告可定位到具体表与字段。",
+
+  "tables": [
+    {
+      "name": "c_monster_cfg",
+      "fields": [
+        { "name": "Name", "proto_type": "string", "in_manifest": true },
+        { "name": "Level", "proto_type": "int32", "in_manifest": true },
+        { "name": "DropRate", "proto_type": "float", "in_manifest": true }
+      ]
+    },
+    {
+      "name": "c_map_cfg",
+      "fields": [
+        { "name": "Name", "proto_type": "string", "in_manifest": true },
+        { "name": "MapEditFile", "proto_type": "string", "in_manifest": true, "blacklisted": true },
+        { "name": "NavMeshFile", "proto_type": "string", "in_manifest": true, "blacklisted": true }
+      ]
+    }
+  ],
+
+  "columns": [
+    "#IDAlias", "LINENO",
+    "DEMOTEXT_NAME_CHS", "DEMOTEXT_NAME_JP", "DEMOTEXT_NAME_EN"
+  ],
+  "column_ignore": ["#IDAlias", "LINENO"],
+
+  "generated_rows": [
+    { "ukey": "治疗药水", "column": "DEMOTEXT_NAME_CHS" },
+    { "ukey": "Healing Potion", "column": "DEMOTEXT_NAME_CHS" },
+    { "ukey": "", "column": "DEMOTEXT_NAME_CHS" }
+  ],
+
+  "merged": [
+    { "ukey": "治疗药水", "translations": ["回復薬"] },
+    { "ukey": "星门石", "translations": ["スターポータル", "スターポータル(旧)"] }
+  ]
+}

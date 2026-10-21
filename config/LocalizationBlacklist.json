@@ -1,0 +1,33 @@
+{
+  "demo_map_cfg": {
+    "MapEditFile": false,
+    "NavMeshFile": false,
+    "PersistentLevelPath": false,
+    "BGMusic": false,
+    "DefaultWeatherName": false,
+    "MiniMapPath": false
+  },
+  "demo_minimap_cfg": {
+    "MapPath": false,
+    "IconPath": false
+  },
+  "demo_monster_cfg": {
+    "ModelPath": false,
+    "DeathAction": false,
+    "DeathEffect": false,
+    "BirthAction1": false
+  },
+  "demo_buff_cfg": {
+    "EffectPath": false,
+    "AnimPath": false,
+    "EffectSocketName": false,
+    "BuffIcon": false
+  },
+  "demo_dir_anim": {
+    "NormalAnimPath": false,
+    "ForwardAnimPath": false,
+    "LeftAnimPath": false,
+    "RightAnimPath": false,
+    "BackAnimPath": false
+  }
+}

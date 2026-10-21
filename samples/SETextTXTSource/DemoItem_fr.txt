@@ -1,0 +1,8 @@
+// 本行是注释，导出时应被跳过
+$header
+@:0001
+Potion de soin
+@:0002
+Pierre de portail
+@:0003
+Restaure un peu de PV.

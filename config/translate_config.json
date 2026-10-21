@@ -1,0 +1,47 @@
+{
+  "说明": [
+    "表格对应的协议英文名可以在这个配置里查找：<WORK_ROOT>/Table/config/converlist.xml",
+    "列表最后一项后面不要加逗号",
+    "枚举类型的字符串不用配置，<WORK_ROOT>/Table/result，在这个目录可以查看转表生成的json文件，如果是数字就是枚举",
+    "只能配置string类型的变量，类型可以查看<WORK_ROOT>/Protocol/resproto/proto_res_c.proto",
+    "配置文件修改后，要运行 '校验配置文件.bat' 看看是否有报错",
+    {
+      "一般表格配置示例": {
+        "说明": "配置表头第二行的英文字段",
+        "c_item_cfg": [
+          "ItemName",
+          "ItemDesc"
+        ]
+      },
+      "包含数组的配置示例": {
+        "说明": "配置表头第二行的英文字段+'.'+'[0]'后面的字段, 例如：对白表的表头是SpeakerList[0].Name，配置如下",
+        "c_dialogue_group": [
+          "SpeakerList.Name"
+        ]
+      }
+    }
+  ],
+  "Config": {
+    "demo_item_cfg": [
+      "ItemName",
+      "ItemDesc"
+    ],
+    "demo_monster_cfg": [
+      "Name"
+    ],
+    "demo_quest_cfg": [
+      "QuestTitle",
+      "Description"
+    ],
+    "demo_buff_cfg": [
+      "BuffName",
+      "Desc"
+    ],
+    "demo_dialogue_group": [
+      "SpeakerList.Name"
+    ],
+    "demo_ui_text_cfg": [
+      "Text"
+    ]
+  }
+}

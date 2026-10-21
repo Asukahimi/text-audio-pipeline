@@ -1,0 +1,100 @@
+﻿[
+  {
+    "name": "ProtoCommon.UnitType",
+    "alias": [
+      "数值",
+      "万分比"
+    ]
+  },
+  {
+    "name": "ProtoCommon.YesNo",
+    "alias": [
+      "否",
+      "是"
+    ]
+  },
+  {
+    "name": "ProtoCommon.role_gender",
+    "alias": [
+      "通用",
+      "男",
+      "女"
+    ]
+  },
+  {
+    "name": "ProtoCommon.SkillMode",
+    "alias": [
+      "PVE",
+      "PVP",
+      "BUFF"
+    ]
+  },
+  {
+    "name": "ProtoCommon.MountType",
+    "alias": [
+      "步行",
+      "浮空"
+    ]
+  },
+  {
+    "name": "ProtoCommon.rev_type",
+    "alias": [
+      "基础值",
+      "缩放值",
+      "最大值"
+    ]
+  },
+  {
+    "name": "ProtoCommon.attr_type",
+    "alias": [
+      "攻击力",
+      "防御力",
+      "暴击率",
+      "命中率"
+    ]
+  },
+  {
+    "name": "ProtoCommon.class_type",
+    "alias": [
+      "近战",
+      "远程",
+      "治疗",
+      "防御"
+    ]
+  },
+  {
+    "name": "ProtoCommon.CampType",
+    "alias": [
+      "阵营甲",
+      "阵营乙",
+      "阵营丙"
+    ]
+  },
+  {
+    "name": "ProtoRes.area_shape_type",
+    "alias": [
+      "圆柱状",
+      "盒状",
+      "圆环",
+      "扇形"
+    ]
+  },
+  {
+    "name": "ProtoRes.item_quality",
+    "alias": [
+      "普通",
+      "优秀",
+      "稀有",
+      "史诗"
+    ]
+  },
+  {
+    "name": "ProtoRes.quest_state",
+    "alias": [
+      "未接取",
+      "进行中",
+      "可交付",
+      "已完成"
+    ]
+  }
+]

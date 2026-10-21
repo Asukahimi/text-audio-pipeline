@@ -1,0 +1,8 @@
+# SHEET: DemoText
+# 
+#IDAlias,LINENO,DEMOTEXT_NAME_CHS,DEMOTEXT_NAME_JA,DEMOTEXT_NAME_KO,DEMOTEXT_NAME_EN,DEMOTEXT_NAME_DE,DEMOTEXT_NAME_FR,DEMOTEXT_TEXT_CHS,DEMOTEXT_TEXT_JA,DEMOTEXT_TEXT_KO,DEMOTEXT_TEXT_EN,DEMOTEXT_TEXT_DE,DEMOTEXT_TEXT_FR
+#outputfile,key,,,,,,,,,,,,
+#datatype,key,string,string,string,string,string,string,string,string,string,string,string,string
+,,,,,,,,,,,,,
+,1,治疗药水,回復薬,치유 물약,Healing Potion,Heiltrank,Potion de soin,恢复少量生命值。, HPを少し回復する。,체력을 조금 회복한다.,Restores a small amount of HP.,Stellt ein wenig HP wieder her.,Restaure un peu de PV.
+,2,星门石,スターポータル,스타 게이트,Star Gate Stone,Sternentorstein,Pierre de portail,用于快速移动的装置。, 高速移動に使う装置。,고속 이동에 쓰는 장치.,A device used for fast travel.,Ein Gerät für schnelles Reisen.,Un appareil de voyage rapide.

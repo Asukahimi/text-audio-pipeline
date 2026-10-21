@@ -1,0 +1,1 @@
+dir/a-d/s/b >LIST.TXT
